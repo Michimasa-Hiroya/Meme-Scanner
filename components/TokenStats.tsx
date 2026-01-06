@@ -98,7 +98,7 @@ const TokenStats: React.FC<Props> = ({ data, aiResult }) => {
           volMcRatio > 20 ? "Active" : "Stable", 
           volMcRatio > 20, 
           true,
-          "Trading intensity relative to value. High ratio suggests strong speculative momentum."
+          "Trading intensity. >20% suggests strong momentum; lower indicates consolidation."
         )}
         {statItem(
           "Liq/MC Ratio", 
@@ -106,7 +106,7 @@ const TokenStats: React.FC<Props> = ({ data, aiResult }) => {
           liqMcRatio > 10 ? "Deep" : "Thin", 
           liqMcRatio > 10, 
           true,
-          "Market depth indicator. Lower values increase the impact of large sell orders (slippage)."
+          "Market depth. >10% is healthy; lower values increase slippage risk on exits."
         )}
         {statItem(
           "Turnover Rate", 
@@ -114,7 +114,7 @@ const TokenStats: React.FC<Props> = ({ data, aiResult }) => {
           liqTurnover > 50 ? "Velocity" : "Healthy", 
           liqTurnover > 50, 
           true,
-          "Capital efficiency. Measures how quickly current liquidity is cycling through trades."
+          "Capital efficiency. >50% indicates high velocity; shows how fast liquidity cycles."
         )}
       </div>
     </div>

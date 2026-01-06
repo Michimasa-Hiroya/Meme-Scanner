@@ -77,7 +77,7 @@ const App: React.FC = () => {
               <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-700 flex items-center justify-center shadow-2xl shadow-indigo-500/30 transform group-hover:rotate-6 transition-all duration-500">
                 <span className="text-2xl font-black tracking-tighter text-white">MS</span>
               </div>
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-cyan-400 rounded-full animate-pulse border-2 border-black"></div>
+              {/* Removed cyan notification dot as requested */}
             </div>
             <div className="flex flex-col">
               <h1 className="text-xl font-extrabold tracking-tight uppercase leading-none group-hover:text-indigo-400 transition-colors">Meme Scanner</h1>
@@ -108,8 +108,8 @@ const App: React.FC = () => {
 
         {!tokenData && !loading && (
           <div className="flex flex-col items-center justify-center py-32 md:py-48 text-center animate-in fade-in slide-in-from-bottom-8 duration-1000">
-            {/* Headline with pr-4 to prevent italic clipping on right side */}
-            <h2 className="text-4xl md:text-7xl font-black mb-12 tracking-tight leading-none uppercase italic pr-4">
+            {/* Headline with increased pr-8 to prevent 'R' from clipping */}
+            <h2 className="text-4xl md:text-7xl font-black mb-12 tracking-tight leading-none uppercase italic pr-8">
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-white to-purple-500">
                 Meme Scanner
               </span>
@@ -169,10 +169,9 @@ const App: React.FC = () => {
               <div className="w-24 h-24 border-t-2 border-indigo-500 rounded-full animate-spin"></div>
               <i className="fa-solid fa-radar absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-xl text-indigo-400 animate-pulse"></i>
             </div>
-            <h3 className="text-xl font-black text-white uppercase animate-pulse mb-4">Initializing Deep Scan...</h3>
-            <div className="bg-indigo-500/10 border border-indigo-500/20 px-6 py-2 rounded-full mb-6">
-               <span className="text-indigo-400 text-sm font-black uppercase tracking-widest italic">Analyzing Liquidity & Sentiment</span>
-            </div>
+            {/* Updated loading text and removed sub-label */}
+            <h3 className="text-xl font-black text-white uppercase animate-pulse mb-6">Analyzing...</h3>
+            
             <div className="flex flex-col items-center">
               <p className="text-zinc-500 text-[10px] font-mono text-center uppercase tracking-widest max-w-xs mb-2">Connecting to Alpha Engine to process on-chain network data...</p>
               <p className="text-indigo-400/80 text-[10px] font-black uppercase tracking-[0.2em]">Analysis takes approximately 50 seconds.</p>

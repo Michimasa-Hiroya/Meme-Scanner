@@ -2,13 +2,11 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { TokenData, AIAnalysisResult } from "../types";
 
-export const analyzeToken = async (data: TokenData, lang: 'en' | 'ja' = 'ja'): Promise<AIAnalysisResult> => {
+export const analyzeToken = async (data: TokenData): Promise<AIAnalysisResult> => {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   
   const currentMC = data.marketCap || data.fdv;
   const currentPrice = parseFloat(data.priceUsd);
-  
-  const langName = lang === 'ja' ? '日本語 (Japanese)' : '英語 (English)';
   
   const prompt = `
     Analyze the Solana token ${data.baseToken.address} (${data.baseToken.name}).
@@ -18,13 +16,21 @@ export const analyzeToken = async (data: TokenData, lang: 'en' | 'ja' = 'ja'): P
     - MARKET CAP: $${currentMC}
     - 24H VOLUME: $${data.volume.h24}
 
-    Perform a professional deep scan including high-end trading alpha:
-    1. Viral Velocity: How fast is the holder count and social hype growing?
-    2. Insider Stealth: Are early snipers holding or dumping?
-    3. Smart Money: Are "God-tier" wallets (past 100x hunters) buying?
-    4. Exit Signal: Is the chart overextended? Is it time to take profit or buy the dip?
+    Perform a professional deep scan using Google Search grounding to find the latest data. 
+    Specifically, identify "Token Characteristics" (e.g., specific utilities, tax structures, community nature) 
+    and the most current "Holder Count" from block explorers or reliable trackers.
 
-    CRITICAL: All textual descriptions MUST be in ${langName}.
+    All output must be in professional English.
+
+    ENUM/STATUS RULES (DO NOT TRANSLATE):
+    - sentiment: 'Bullish', 'Neutral', 'Bearish', 'Rekt'
+    - riskLevel: 'Low', 'Medium', 'High', 'Extreme'
+    - exitSignal: 'Strong Hold', 'Take Profit', 'Danger: Top', 'Accumulate'
+    - clusterRisk: 'Low', 'Medium', 'High', 'Critical'
+    - smartMoneyInflow: 'Strong', 'Neutral', 'Outflow'
+    - topHoldersTrend: 'Increasing', 'Stable', 'Decreasing'
+    - liquidityConcentration: 'High', 'Medium', 'Low'
+    
     Output strictly in JSON format.
   `;
 
@@ -44,10 +50,11 @@ export const analyzeToken = async (data: TokenData, lang: 'en' | 'ja' = 'ja'): P
             pvpIndex: { type: Type.NUMBER },
             communityHeat: { type: Type.NUMBER },
             holderQuality: { type: Type.STRING },
-            smartMoneySignal: { type: Type.STRING },
             summary: { type: Type.STRING },
             pros: { type: Type.ARRAY, items: { type: Type.STRING } },
             cons: { type: Type.ARRAY, items: { type: Type.STRING } },
+            tokenCharacteristics: { type: Type.ARRAY, items: { type: Type.STRING } },
+            estimatedHolderCount: { type: Type.NUMBER },
             alphaTerminal: {
               type: Type.OBJECT,
               properties: {
@@ -172,26 +179,14 @@ export const analyzeToken = async (data: TokenData, lang: 'en' | 'ja' = 'ja'): P
               }
             }
           },
-          required: ["score", "sentiment", "riskLevel", "pvpIndex", "communityHeat", "holderQuality", "smartMoneySignal", "summary", "pros", "cons", "alphaTerminal", "marketDepth", "securityAudit", "bubbleMapAnalysis", "prediction", "fibonacci", "socialIntelligence", "investmentStrategy"],
+          required: ["score", "sentiment", "riskLevel", "pvpIndex", "communityHeat", "summary", "pros", "cons", "tokenCharacteristics", "estimatedHolderCount", "alphaTerminal", "marketDepth", "securityAudit", "bubbleMapAnalysis", "prediction", "fibonacci", "socialIntelligence", "investmentStrategy"],
         },
         thinkingConfig: { thinkingBudget: 32768 }
       },
     });
 
     const textOutput = response.text || "{}";
-    const result: AIAnalysisResult = JSON.parse(textOutput.trim());
-
-    const groundingChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
-    if (groundingChunks) {
-      result.sources = groundingChunks
-        .filter((chunk: any) => chunk.web)
-        .map((chunk: any) => ({
-          title: chunk.web.title || "Reference",
-          url: chunk.web.uri
-        }));
-    }
-
-    return result;
+    return JSON.parse(textOutput.trim());
   } catch (error: any) {
     console.error("Analysis Error:", error);
     throw error;

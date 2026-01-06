@@ -139,6 +139,8 @@ export interface AIAnalysisResult {
   holderQuality: 'Diamond' | 'Neutral' | 'Paper';
   pros: string[];
   cons: string[];
+  tokenCharacteristics: string[];
+  estimatedHolderCount: number;
   prediction: PricePrediction;
   fibonacci: FibonacciLevels;
   marketDepth: MarketDepth;
